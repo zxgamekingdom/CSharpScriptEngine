@@ -2,17 +2,17 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
-using CSharpScriptEngine.Library.Args;
+using CSharpScriptEngine.Library.Options;
 using Microsoft.CodeAnalysis;
 
 namespace CSharpScriptEngine.Library.Results
 {
-    public class CompileResult
+    public class CompileResults
     {
         private readonly Diagnostic[]? _diagnostics;
 
-        public CompileResult(bool isSuccessful,
-            CompileArg compileArg,
+        public CompileResults(bool isSuccessful,
+            CompileOptions compileOptions,
             byte[]? pdbBytes = null,
             byte[]? peBytes = null,
             ImmutableArray<Diagnostic>? diagnostics = default)
@@ -21,7 +21,7 @@ namespace CSharpScriptEngine.Library.Results
             PeBytes = peBytes;
             IsSuccessful = isSuccessful;
             _diagnostics = diagnostics?.ToArray();
-            CompileArg = compileArg;
+            CompileOptions = compileOptions;
         }
 
         public Assembly? Assembly =>
@@ -31,7 +31,7 @@ namespace CSharpScriptEngine.Library.Results
                 false => default
             };
 
-        public CompileArg CompileArg { get; }
+        public CompileOptions CompileOptions { get; }
         public IEnumerable<Diagnostic>? Diagnostics => _diagnostics;
 
         public bool ExistDiagnostics =>

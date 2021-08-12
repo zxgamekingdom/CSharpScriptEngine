@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpScriptEngine.Library;
-using CSharpScriptEngine.Library.Args;
 using CSharpScriptEngine.Library.Extensions;
 using CSharpScriptEngine.Library.Results;
 using Microsoft.CodeAnalysis;

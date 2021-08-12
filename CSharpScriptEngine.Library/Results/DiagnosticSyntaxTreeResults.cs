@@ -5,11 +5,11 @@ using Microsoft.CodeAnalysis;
 
 namespace CSharpScriptEngine.Library.Results
 {
-    public class DiagnosticSyntaxTreeResult
+    public class DiagnosticSyntaxTreeResults
     {
         private readonly Diagnostic[]? _diagnostics;
 
-        public DiagnosticSyntaxTreeResult(string codePath,
+        public DiagnosticSyntaxTreeResults(string codePath,
             IEnumerable<Diagnostic>? diagnostics)
         {
             if (string.IsNullOrWhiteSpace(codePath))

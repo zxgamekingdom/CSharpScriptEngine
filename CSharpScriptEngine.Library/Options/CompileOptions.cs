@@ -5,16 +5,16 @@ using CSharpScriptEngine.Library.Extensions;
 using CSharpScriptEngine.Library.Results;
 using Microsoft.CodeAnalysis;
 
-namespace CSharpScriptEngine.Library.Args
+namespace CSharpScriptEngine.Library.Options
 {
-    public class CompileArg
+    public class CompileOptions
     {
         private readonly string? _assemblyName;
         private readonly List<PortableExecutableReference> _references = new();
-        private readonly List<SourceCodeCompileArg> _compileCodeArgs = new();
+        private readonly List<SourceCodeCompileOptions> _compileCodeArgs = new();
 
-        public CompileArg(string? assemblyName = null,
-            IEnumerable<SourceCodeCompileArg>? sourceCodeCompileArgs = null,
+        public CompileOptions(string? assemblyName = null,
+            IEnumerable<SourceCodeCompileOptions>? sourceCodeCompileArgs = null,
             IEnumerable<PortableExecutableReference>? references = null)
         {
             _assemblyName = assemblyName;
@@ -44,39 +44,39 @@ namespace CSharpScriptEngine.Library.Args
                 _ => throw new EmptyCollectionException()
             };
 
-        public IEnumerable<SourceCodeCompileArg> CompileCodeArgs => _compileCodeArgs;
+        public IEnumerable<SourceCodeCompileOptions> CompileCodeArgs => _compileCodeArgs;
 
-        public CompileArg Add(IEnumerable<SourceCodeCompileArg> args)
+        public CompileOptions Add(IEnumerable<SourceCodeCompileOptions> args)
         {
             _compileCodeArgs.AddRange(args);
             return this;
         }
 
-        public CompileArg Add(IEnumerable<SourceCodeResult> results)
+        public CompileOptions Add(IEnumerable<SourceCodeResults> results)
         {
-            SourceCodeResult[] buff =
-                results as SourceCodeResult[] ?? results.ToArray();
+            SourceCodeResults[] buff =
+                results as SourceCodeResults[] ?? results.ToArray();
             int length = buff.Length;
-            var arr = new SourceCodeCompileArg[length];
+            var arr = new SourceCodeCompileOptions[length];
             for (var i = 0; i < length; i++) arr[i] = buff[i];
             _compileCodeArgs.AddRange(arr);
             return this;
         }
 
-        public CompileArg Add(IEnumerable<PortableExecutableReference> references)
+        public CompileOptions Add(IEnumerable<PortableExecutableReference> references)
         {
             _references.AddRange(references);
             return this;
         }
 
-        public CompileArg Add(IEnumerable<string> dllPath)
+        public CompileOptions Add(IEnumerable<string> dllPath)
         {
             _references.AddRange(dllPath.Select(s =>
                 MetadataReference.CreateFromFile(s)));
             return this;
         }
 
-        public CompileArg Add(IEnumerable<Type> types)
+        public CompileOptions Add(IEnumerable<Type> types)
         {
             _references.AddRange(types.Select(type =>
                 MetadataReference.CreateFromFile(type.Assembly.Location)));

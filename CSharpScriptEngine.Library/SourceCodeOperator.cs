@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
-using CSharpScriptEngine.Library.Args;
+using CSharpScriptEngine.Library.Options;
 using CSharpScriptEngine.Library.Results;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -17,8 +17,8 @@ namespace CSharpScriptEngine.Library
         /// <summary>
         /// 获取源代码的源文本与语法树
         /// </summary>
-        public static IEnumerable<SourceCodeResult> GetSourceTextAndSyntaxTree(
-            IEnumerable<SourceCodeArg> args)
+        public static IEnumerable<SourceCodeResults> GetSourceTextAndSyntaxTree(
+            IEnumerable<SourceCodeOptions> args)
         {
             return args.Select(x =>
             {
@@ -31,35 +31,35 @@ namespace CSharpScriptEngine.Library
                     canBeEmbedded: true);
                 SyntaxTree syntaxTree =
                     CSharpSyntaxTree.ParseText(sourceText, path: codePath);
-                return new SourceCodeResult(codePath, sourceText, syntaxTree);
+                return new SourceCodeResults(codePath, sourceText, syntaxTree);
             });
         }
 
         /// <summary>
         /// 诊断语法树是否有问题
         /// </summary>
-        public static IEnumerable<DiagnosticSyntaxTreeResult> DiagnosticSyntaxTree(
-            IEnumerable<DiagnosticSyntaxTreeArg> args)
+        public static IEnumerable<DiagnosticSyntaxTreeResults> DiagnosticSyntaxTree(
+            IEnumerable<DiagnosticSyntaxTreeOptions> args)
         {
             return args.Select(x =>
             {
                 Diagnostic[] buff = x.SyntaxTree.GetDiagnostics().ToArray();
                 return buff.Length == 0 ?
-                    new DiagnosticSyntaxTreeResult(x.CodePath, null) :
-                    new DiagnosticSyntaxTreeResult(x.CodePath, buff);
+                    new DiagnosticSyntaxTreeResults(x.CodePath, null) :
+                    new DiagnosticSyntaxTreeResults(x.CodePath, buff);
             });
         }
 
         /// <summary>
         /// 诊断语法树是否有问题
         /// </summary>
-        public static IEnumerable<DiagnosticSyntaxTreeResult> DiagnosticSyntaxTree(
-            IEnumerable<SourceCodeResult> codeResults)
+        public static IEnumerable<DiagnosticSyntaxTreeResults> DiagnosticSyntaxTree(
+            IEnumerable<SourceCodeResults> codeResults)
         {
-            SourceCodeResult[] buffArr =
-                codeResults as SourceCodeResult[] ?? codeResults.ToArray();
+            SourceCodeResults[] buffArr =
+                codeResults as SourceCodeResults[] ?? codeResults.ToArray();
             int length = buffArr.Length;
-            DiagnosticSyntaxTreeArg[] arr = new DiagnosticSyntaxTreeArg[length];
+            DiagnosticSyntaxTreeOptions[] arr = new DiagnosticSyntaxTreeOptions[length];
             for (var i = 0; i < length; i++) arr[i] = buffArr[i];
             return DiagnosticSyntaxTree(arr);
         }
@@ -67,12 +67,12 @@ namespace CSharpScriptEngine.Library
         /// <summary>
         /// 编译
         /// </summary>
-        public static CompileResult Compile(CompileArg arg)
+        public static CompileResults Compile(CompileOptions options)
         {
-            string assemblyName = arg.AssemblyName;
+            string assemblyName = options.AssemblyName;
             var compilation = CSharpCompilation.Create(assemblyName,
-                arg.SyntaxTrees,
-                arg.References,
+                options.SyntaxTrees,
+                options.References,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
             using var pdbStream = new MemoryStream();
             using var peStream = new MemoryStream();
@@ -80,19 +80,19 @@ namespace CSharpScriptEngine.Library
                 pdbStream,
                 options: new EmitOptions(
                     debugInformationFormat: DebugInformationFormat.PortablePdb),
-                embeddedTexts: arg.CompileCodeArgs.Select(x =>
+                embeddedTexts: options.CompileCodeArgs.Select(x =>
                     EmbeddedText.FromSource(x.CodePath, x.SourceText)));
             bool success = emitResult.Success;
             ImmutableArray<Diagnostic> diagnostics = emitResult.Diagnostics;
             return success switch
             {
-                true => new CompileResult(true,
-                    arg,
+                true => new CompileResults(true,
+                    options,
                     pdbStream.ToArray(),
                     peStream.ToArray(),
                     diagnostics),
-                false => new CompileResult(false,
-                    arg,
+                false => new CompileResults(false,
+                    options,
                     diagnostics: diagnostics)
             };
         }

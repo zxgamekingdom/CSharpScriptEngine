@@ -1,14 +1,16 @@
 ﻿using System;
+using CSharpScriptEngine.Library.Results;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
 
-namespace CSharpScriptEngine.Library.Results
+namespace CSharpScriptEngine.Library.Options
 {
-    public class SourceCodeResult
+    public class DiagnosticSyntaxTreeOptions
     {
-        public SourceCodeResult(string codePath,
-            SourceText sourceText,
-            SyntaxTree syntaxTree)
+        public static implicit operator DiagnosticSyntaxTreeOptions(
+            SourceCodeResults sourceCodeResults) =>
+            new(sourceCodeResults.CodePath, sourceCodeResults.SyntaxTree);
+
+        public DiagnosticSyntaxTreeOptions(string codePath, SyntaxTree syntaxTree)
         {
             if (string.IsNullOrWhiteSpace(codePath))
             {
@@ -17,16 +19,11 @@ namespace CSharpScriptEngine.Library.Results
             }
 
             CodePath = codePath ?? throw new ArgumentNullException(nameof(codePath));
-            SourceText = sourceText ??
-                throw new ArgumentNullException(nameof(sourceText));
             SyntaxTree = syntaxTree ??
                 throw new ArgumentNullException(nameof(syntaxTree));
         }
 
         public string CodePath { get; }
-
-        public SourceText SourceText { get; }
-
         public SyntaxTree SyntaxTree { get; }
     }
 }

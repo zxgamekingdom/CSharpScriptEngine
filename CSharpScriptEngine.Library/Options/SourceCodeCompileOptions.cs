@@ -3,16 +3,16 @@ using CSharpScriptEngine.Library.Results;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace CSharpScriptEngine.Library.Args
+namespace CSharpScriptEngine.Library.Options
 {
-    public class SourceCodeCompileArg
+    public class SourceCodeCompileOptions
     {
-        public static implicit operator SourceCodeCompileArg(SourceCodeResult result)
+        public static implicit operator SourceCodeCompileOptions(SourceCodeResults results)
         {
-            return new(result.CodePath, result.SourceText, result.SyntaxTree);
+            return new(results.CodePath, results.SourceText, results.SyntaxTree);
         }
 
-        public SourceCodeCompileArg(string codePath,
+        public SourceCodeCompileOptions(string codePath,
             SourceText sourceText,
             SyntaxTree syntaxTree)
         {

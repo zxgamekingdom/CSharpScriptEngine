@@ -1,13 +1,13 @@
 ﻿using System;
 using CSharpScriptEngine.Library.Extensions;
 
-namespace CSharpScriptEngine.Library.Args
+namespace CSharpScriptEngine.Library.Options
 {
-    public class SourceCodeArg
+    public class SourceCodeOptions
     {
         private readonly string? _fileName;
 
-        public SourceCodeArg(string codeString, string? fileName = null)
+        public SourceCodeOptions(string codeString, string? fileName = null)
         {
             CodeString = codeString;
             _fileName = fileName;
